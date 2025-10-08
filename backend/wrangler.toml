@@ -1,0 +1,11 @@
+name = "todolist-worker"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "todolist-db"
+database_id = "your-database-id-here"  # Ganti dengan ID D1 database setelah create
+
+[vars]
+# JWT_SECRET di-set menggunakan: wrangler secret put JWT_SECRET
