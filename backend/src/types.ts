@@ -12,6 +12,17 @@ export interface Task {
   description?: string;
   completed: boolean;
   created_at: string;
+  attachments: string; // JSON string in database
+}
+
+export interface TaskResponse {
+  id: number;
+  user_id: number;
+  title: string;
+  description?: string;
+  completed: boolean;
+  created_at: string;
+  attachments: string[]; // Array of KV keys
 }
 
 export interface AuthRequest {
@@ -25,4 +36,11 @@ export interface AuthResponse {
     id: number;
     username: string;
   };
+}
+
+export interface Attachment {
+  key: string;
+  filename: string;
+  size: number;
+  type: string;
 }

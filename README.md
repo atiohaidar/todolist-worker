@@ -10,6 +10,8 @@ Aplikasi daftar tugas sederhana dengan sistem login menggunakan Cloudflare Worke
 - 🔐 **Registrasi dan Login** - Buat akun dan masuk tanpa verifikasi email
 - 🔒 **Keamanan JWT** - Sistem autentikasi yang aman
 - ✅ **Kelola Tugas** - Tambah, edit, hapus, dan tandai selesai tugas
+- 📎 **Lampiran File** - Upload multiple file sebagai lampiran tugas
+- 📥 **Download Lampiran** - Preview dan download file lampiran
 - 🌐 **Frontend Sederhana** - Interface web murni HTML/CSS/JavaScript
 - ⚡ **Backend Cepat** - Menggunakan Cloudflare Workers dengan Hono.js
 
@@ -108,9 +110,10 @@ wrangler deploy
 1. **Registrasi**: Buat akun baru dengan username dan password
 2. **Login**: Masuk dengan akun yang sudah dibuat
 3. **Kelola Tugas**:
-   - ➕ **Tambah**: Klik "Add Task" dan isi judul serta deskripsi
-   - ✏️ **Edit**: Klik tombol "Edit" pada tugas
-   - ✅ **Selesai**: Klik checkbox untuk menandai selesai
+   - ➕ **Tambah**: Klik "Add Task" dan isi judul, deskripsi, serta upload lampiran (opsional)
+   - ✅ **Selesai**: Klik checkbox di sebelah judul untuk menandai selesai/belum
+   - ✏️ **Edit**: Klik tombol "Edit" untuk mengubah judul dan deskripsi
+   - 📎 **Lampiran**: Klik link lampiran untuk download/preview file
    - 🗑️ **Hapus**: Klik tombol "Delete" untuk menghapus
 
 ## 📚 Dokumentasi API
@@ -135,6 +138,7 @@ Dokumentasi lengkap API tersedia di halaman utama aplikasi menggunakan Swagger U
 
 - **Backend**: Cloudflare Workers + Hono.js
 - **Database**: Cloudflare D1 (SQLite)
+- **File Storage**: Cloudflare Workers KV
 - **Authentication**: JWT (JSON Web Token)
 - **Frontend**: HTML5, CSS3, JavaScript (Vanilla)
 - **API Documentation**: Swagger UI

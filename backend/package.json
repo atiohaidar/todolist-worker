@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
-    "db:migrate": "wrangler d1 execute todolist-db --file=./migrations/001_init.sql"
+    "db:migrate": "wrangler d1 execute todolist-db --file=./migrations/001_init.sql",
+    "db:migrate:attachments": "wrangler d1 execute todolist-db --file=./migrations/002_add_attachments.sql",
+    "db:migrate:remote": "wrangler d1 execute todolist-db --remote --file=./migrations/001_init.sql && wrangler d1 execute todolist-db --remote --file=./migrations/002_add_attachments.sql"
   },
   "dependencies": {
     "@hono/swagger-ui": "^0.5.2",

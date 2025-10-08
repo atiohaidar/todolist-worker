@@ -1,3 +1,23 @@
+async function toggleComplete(id, completed) {
+  try {
+    const res = await fetch(`${API_BASE}/api/tasks/${id}`, {
+      method: 'PUT',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ completed })
+    });
+    if (res.ok) {
+      loadTasks(); // Reload tasks to update UI
+    } else {
+      alert('Failed to update task');
+    }
+  } catch (err) {
+    alert('Failed to update task');
+  }
+}
+
 async function loadTasks() {
   try {
     const res = await fetch(`${API_BASE}/api/tasks`, {
@@ -9,13 +29,28 @@ async function loadTasks() {
     tasks.forEach(task => {
       const li = document.createElement('li');
       li.className = task.completed ? 'completed' : '';
+      
+      let attachmentsHtml = '';
+      if (task.attachments && task.attachments.length > 0) {
+        attachmentsHtml = '<div class="attachments"><strong>Lampiran:</strong><br>';
+        task.attachments.forEach(key => {
+          const filename = key.split('-').slice(1).join('-');
+          attachmentsHtml += `<a href="${API_BASE}/api/files/${key}" target="_blank" download="${filename}">${filename}</a><br>`;
+        });
+        attachmentsHtml += '</div>';
+      }
+      
       li.innerHTML = `
-        <div>
-          <strong>${task.title}</strong>
+        <div class="task-content">
+          <label class="checkbox-label">
+            <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleComplete(${task.id}, this.checked)">
+            <strong>${task.title}</strong>
+          </label>
           ${task.description ? `<p>${task.description}</p>` : ''}
+          ${attachmentsHtml}
         </div>
-        <div>
-          <button class="edit-btn" onclick="editTask(${task.id}, '${task.title}', '${task.description || ''}', ${task.completed})">Edit</button>
+        <div class="task-actions">
+          <button class="edit-btn" onclick="editTask(${task.id}, '${task.title.replace(/'/g, "\\'")}', '${(task.description || '').replace(/'/g, "\\'")}', ${task.completed}, ${JSON.stringify(task.attachments || []).replace(/'/g, "\\'")})">Edit</button>
           <button class="delete-btn" onclick="deleteTask(${task.id})">Delete</button>
         </div>
       `;
@@ -30,14 +65,46 @@ document.getElementById('task-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const title = document.getElementById('task-title').value;
   const description = document.getElementById('task-description').value;
+  const files = document.getElementById('task-files').files;
+  
+  if (!title) {
+    alert('Title is required');
+    return;
+  }
+  
   try {
+    let attachments = [];
+    
+    // Upload files first
+    if (files.length > 0) {
+      for (let file of files) {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        const uploadRes = await fetch(`${API_BASE}/api/upload`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` },
+          body: formData
+        });
+        
+        if (uploadRes.ok) {
+          const uploadData = await uploadRes.json();
+          attachments.push(uploadData.key);
+        } else {
+          alert(`Failed to upload ${file.name}`);
+          return;
+        }
+      }
+    }
+    
+    // Create task
     const res = await fetch(`${API_BASE}/api/tasks`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify({ title, description })
+      body: JSON.stringify({ title, description, attachments })
     });
     if (res.ok) {
       loadTasks();
@@ -50,10 +117,9 @@ document.getElementById('task-form').addEventListener('submit', async (e) => {
   }
 });
 
-async function editTask(id, currentTitle, currentDesc, currentCompleted) {
+async function editTask(id, currentTitle, currentDesc, currentCompleted, currentAttachments) {
   const newTitle = prompt('Edit title:', currentTitle);
   const newDesc = prompt('Edit description:', currentDesc);
-  const newCompleted = confirm('Mark as completed?');
   if (newTitle !== null) {
     try {
       const res = await fetch(`${API_BASE}/api/tasks/${id}`, {
@@ -62,7 +128,7 @@ async function editTask(id, currentTitle, currentDesc, currentCompleted) {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ title: newTitle, description: newDesc, completed: newCompleted })
+        body: JSON.stringify({ title: newTitle, description: newDesc })
       });
       if (res.ok) {
         loadTasks();

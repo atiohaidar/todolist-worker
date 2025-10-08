@@ -5,8 +5,8 @@ compatibility_date = "2024-01-01"
 [[d1_databases]]
 binding = "DB"
 database_name = "todolist-db"
-database_id = "82b9e81c-25b3-42a2-a195-798b4d1626b0"  # Ganti dengan ID D1 database setelah create
+database_id = "ini ganti dengna id d1"  # Ganti dengan ID D1 database setelah create
 
 [[kv_namespaces]]
 binding = "KV"
-id = "ecc29ab4db3f489da45d9bb123330dbb"
+id = "ini id dari kv" # ganti yaa
