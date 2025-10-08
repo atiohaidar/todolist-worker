@@ -160,6 +160,94 @@ Dari pengembangan aplikasi ini, kami belajar:
 - **Error 500**: Jika dapat error 500, periksa apakah database sudah diinisialisasi
 - **Update API URL**: Jangan lupa update URL API di frontend setelah deploy
 
+## 🐛 Troubleshooting Masalah Umum
+
+### Masalah: Upload File ke KV Gagal & Data Tidak Ditampilkan
+
+**Gejala:**
+- File tidak berhasil diupload ke Workers KV
+- Lampiran file tidak muncul di daftar tugas
+- Error 500 Internal Server Error di endpoint auth
+
+**Akar Penyebab:**
+
+1. **Database Belum Diinisialisasi di Production**
+   - Migration SQL belum dijalankan di database production
+   - Tabel `users` dan `tasks` tidak ada
+   - Query database gagal karena tabel tidak ditemukan
+
+2. **Format Data Attachments Tidak Sesuai**
+   - Di database, `attachments` disimpan sebagai JSON string
+   - Frontend expect array, tapi backend return string
+   - Parsing JSON gagal saat menampilkan data
+
+3. **Environment Variables Tidak Lengkap**
+   - JWT_SECRET belum di-set di production
+   - Database binding tidak benar
+   - KV namespace belum dibuat
+
+**Solusi Lengkap:**
+
+1. **Inisialisasi Database Production**
+   ```bash
+   # Jalankan migration di remote database
+   wrangler d1 execute todolist-db --remote --file=./migrations/001_init.sql
+   
+   # Atau gunakan endpoint init-db jika migration gagal
+   curl https://your-worker-url/init-db
+   ```
+
+2. **Perbaiki Format Data Attachments**
+   - Backend sekarang otomatis parse JSON string menjadi array
+   - Pastikan response API mengembalikan `attachments` sebagai array
+   - Frontend sudah expect format array
+
+3. **Verifikasi Environment Setup**
+   ```bash
+   # Cek secrets
+   wrangler secret list
+   
+   # Set JWT_SECRET jika belum ada
+   wrangler secret put JWT_SECRET
+   
+   # Test environment
+   curl https://your-worker-url/test-env
+   ```
+
+4. **Test Step-by-Step**
+   ```bash
+   # 1. Test database connection
+   curl https://your-worker-url/test-db
+   
+   # 2. Test register
+   curl -X POST https://your-worker-url/api/auth/register \
+     -H "Content-Type: application/json" \
+     -d '{"username":"testuser","password":"testpass123"}'
+   
+   # 3. Test login & dapat token
+   TOKEN=$(curl -s -X POST https://your-worker-url/api/auth/login \
+     -H "Content-Type: application/json" \
+     -d '{"username":"testuser","password":"testpass123"}' | jq -r .token)
+   
+   # 4. Test upload file
+   echo "test content" > test.txt
+   curl -X POST https://your-worker-url/api/upload \
+     -H "Authorization: Bearer $TOKEN" \
+     -F "file=@test.txt"
+   
+   # 5. Test create task dengan attachment
+   curl -X POST https://your-worker-url/api/tasks \
+     -H "Authorization: Bearer $TOKEN" \
+     -H "Content-Type: application/json" \
+     -d '{"title":"Test Task","attachments":["7/1234567890-test.txt"]}'
+   ```
+
+**Tips Debugging:**
+- Selalu cek logs worker dengan `wrangler tail`
+- Test endpoint satu per satu
+- Gunakan endpoint test untuk verifikasi komponen
+- Pastikan semua bindings (DB, KV, JWT_SECRET) sudah benar
+
 ## 🤝 Kontribusi
 
 Kontribusi sangat diterima! Silakan:

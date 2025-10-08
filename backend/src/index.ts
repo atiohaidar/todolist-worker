@@ -3,7 +3,7 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { swaggerUI } from '@hono/swagger-ui';
 import { getDB } from './db';
-import { registerUser, loginUser, verifyJWT } from './auth';
+import { registerUser, loginUser, verifyJWT, hashPassword } from './auth';
 import { Task, TaskResponse } from './types';
 
 const app = new Hono<{ Bindings: { DB: D1Database; JWT_SECRET: string; KV: KVNamespace }, Variables: { user: { userId: number; username: string } } }>();

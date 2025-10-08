@@ -9,7 +9,9 @@ form {
   margin-bottom: 20px;
 }
 
-input, textarea, button {
+input,
+textarea,
+button {
   display: block;
   width: 100%;
   margin-bottom: 10px;
@@ -46,7 +48,8 @@ li {
   color: #888;
 }
 
-.edit-btn, .delete-btn {
+.edit-btn,
+.delete-btn {
   margin-left: 10px;
   padding: 5px 10px;
   font-size: 0.8em;

@@ -2,7 +2,7 @@ async function toggleComplete(id, completed) {
   try {
     const res = await fetch(`${API_BASE}/api/tasks/${id}`, {
       method: 'PUT',
-      headers: { 
+      headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
@@ -29,7 +29,7 @@ async function loadTasks() {
     tasks.forEach(task => {
       const li = document.createElement('li');
       li.className = task.completed ? 'completed' : '';
-      
+
       let attachmentsHtml = '';
       if (task.attachments && task.attachments.length > 0) {
         attachmentsHtml = '<div class="attachments"><strong>Lampiran:</strong><br>';
@@ -39,7 +39,7 @@ async function loadTasks() {
         });
         attachmentsHtml += '</div>';
       }
-      
+
       li.innerHTML = `
         <div class="task-content">
           <label class="checkbox-label">
@@ -66,27 +66,27 @@ document.getElementById('task-form').addEventListener('submit', async (e) => {
   const title = document.getElementById('task-title').value;
   const description = document.getElementById('task-description').value;
   const files = document.getElementById('task-files').files;
-  
+
   if (!title) {
     alert('Title is required');
     return;
   }
-  
+
   try {
     let attachments = [];
-    
+
     // Upload files first
     if (files.length > 0) {
       for (let file of files) {
         const formData = new FormData();
         formData.append('file', file);
-        
+
         const uploadRes = await fetch(`${API_BASE}/api/upload`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${token}` },
           body: formData
         });
-        
+
         if (uploadRes.ok) {
           const uploadData = await uploadRes.json();
           attachments.push(uploadData.key);
@@ -96,7 +96,7 @@ document.getElementById('task-form').addEventListener('submit', async (e) => {
         }
       }
     }
-    
+
     // Create task
     const res = await fetch(`${API_BASE}/api/tasks`, {
       method: 'POST',
