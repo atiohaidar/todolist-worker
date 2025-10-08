@@ -27,6 +27,23 @@
     <p>Already have an account? <a href="#" id="show-login">Login</a></p>
   </div>
 
+  <div id="anonymous-section">
+    <h2>🌟 Anonymous Todo Lists</h2>
+    <p>Create collaborative todo lists that anyone can edit - no login required!</p>
+    <form id="anonymous-form">
+      <input type="text" id="anonymous-list-name" placeholder="List Name (optional)" maxlength="100">
+      <button type="submit">Create Anonymous List</button>
+    </form>
+    <div id="anonymous-result" style="display: none;">
+      <h3>✅ List Created!</h3>
+      <p>Share this link with anyone:</p>
+      <input type="text" id="share-url" readonly style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px;">
+      <button onclick="copyShareUrl()">Copy Link</button>
+      <a id="open-list" href="#" target="_blank" style="display: inline-block; margin-left: 10px; color: #007bff;">Open List</a>
+    </div>
+    <hr style="margin: 30px 0;">
+  </div>
+
   <div id="todo-section" style="display: none;">
     <h2>Welcome, <span id="user-greeting"></span>!</h2>
     <button id="logout-btn">Logout</button>

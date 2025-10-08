@@ -125,3 +125,42 @@ document.getElementById('logout-btn').addEventListener('click', () => {
 });
 
 window.onload = checkAuth;
+
+// Anonymous polling-based collaborative list functionality
+document.getElementById('anonymous-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const listName = document.getElementById('anonymous-list-name').value.trim() || 'Untitled List';
+
+  try {
+    const response = await fetch(`${API_BASE}/api/anonymous/lists`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ list_name: listName })
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create anonymous list');
+    }
+
+    const data = await response.json();
+
+    // Show result
+    document.getElementById('share-url').value = data.share_url;
+    document.getElementById('open-list').href = data.share_url;
+    document.getElementById('anonymous-result').style.display = 'block';
+
+    // Clear form
+    document.getElementById('anonymous-list-name').value = '';
+
+  } catch (error) {
+    alert('Failed to create anonymous list: ' + error.message);
+  }
+});
+
+function copyShareUrl() {
+  const shareUrl = document.getElementById('share-url');
+  shareUrl.select();
+  shareUrl.setSelectionRange(0, 99999); // For mobile devices
+  document.execCommand('copy');
+  alert('Link copied to clipboard!');
+}

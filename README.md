@@ -14,6 +14,7 @@ Aplikasi daftar tugas sederhana dengan sistem login menggunakan Cloudflare Worke
 - 📥 **Download Lampiran** - Preview dan download file lampiran
 - 🌐 **Frontend Sederhana** - Interface web murni HTML/CSS/JavaScript
 - ⚡ **Backend Cepat** - Menggunakan Cloudflare Workers dengan Hono.js
+- 🌟 **Anonymous Todo Lists** - Buat list collaborative tanpa login, real-time sync dengan HTTP polling!
 
 ## 🚀 Demo
 
@@ -116,6 +117,33 @@ wrangler deploy
    - 📎 **Lampiran**: Klik link lampiran untuk download/preview file
    - 🗑️ **Hapus**: Klik tombol "Delete" untuk menghapus
 
+### 🌟 Anonymous Todo Lists
+
+Fitur baru untuk collaborative task management tanpa login!
+
+1. **Buat List Anonymous**:
+   - Kunjungi halaman utama aplikasi
+   - Scroll ke section "Anonymous Todo Lists"
+   - Masukkan nama list (opsional)
+   - Klik "Create Anonymous List"
+
+2. **Share & Collaborate**:
+   - Copy link yang dihasilkan
+   - Share ke siapapun via email, chat, atau media sosial
+   - Semua orang bisa edit list secara real-time
+
+3. **Real-time Sync**:
+   - Perubahan langsung terlihat di semua browser
+   - Tidak perlu refresh halaman
+   - Auto-sync setiap 3 detik
+
+4. **Fitur Lengkap**:
+   - ✅ Add, edit, delete tasks
+   - ✅ Mark complete/incomplete
+   - ✅ Real-time collaboration
+   - ✅ No login required
+   - ✅ Responsive design
+
 ## 📚 Dokumentasi API
 
 [![Lihat API Docs](https://img.shields.io/badge/API-Docs-blue?style=for-the-badge)](https://todolist-worker.atiohaidar.workers.dev/)
@@ -134,6 +162,18 @@ Dokumentasi lengkap API tersedia di halaman utama aplikasi menggunakan Swagger U
 | PUT | `/api/tasks/:id` | Update tugas |
 | DELETE | `/api/tasks/:id` | Hapus tugas |
 
+### 🌟 Anonymous API Endpoints
+
+| Method | Endpoint | Deskripsi |
+|--------|----------|-----------|
+| POST | `/api/anonymous/lists` | Buat list anonymous baru |
+| GET | `/api/anonymous/lists/:listId` | Ambil info list |
+| GET | `/api/anonymous/tasks/:listId` | Ambil semua tasks di list |
+| POST | `/api/anonymous/tasks/:listId` | Tambah task baru |
+| PUT | `/api/anonymous/tasks/:listId/:taskId` | Update task |
+| DELETE | `/api/anonymous/tasks/:listId/:taskId` | Hapus task |
+| GET | `/public/:listId` | Halaman public viewer |
+
 ## 🛠️ Teknologi
 
 - **Backend**: Cloudflare Workers + Hono.js
@@ -141,16 +181,35 @@ Dokumentasi lengkap API tersedia di halaman utama aplikasi menggunakan Swagger U
 - **File Storage**: Cloudflare Workers KV
 - **Authentication**: JWT (JSON Web Token)
 - **Frontend**: HTML5, CSS3, JavaScript (Vanilla)
+- **Real-time Sync**: HTTP Polling (3-second intervals)
 - **API Documentation**: Swagger UI
+- **Anonymous Features**: Public endpoints tanpa authentication, real-time sync via HTTP polling
 
-## 🔒 Catatan Keamanan
+## ⚠️ Anonymous Lists - Important Notes
 
-> ⚠️ **PENTING**: Jangan commit data sensitif ke repository publik!
+### Keamanan & Limitations
 
-- **JWT_SECRET** tidak disimpan di kode. Set menggunakan `wrangler secret put JWT_SECRET`
-- **Database ID** menggunakan placeholder. Ganti dengan ID database Anda sendiri
-- Selalu gunakan HTTPS untuk production
-- Password di-hash menggunakan bcrypt
+**Fitur Anonymous dirancang untuk collaboration yang mudah, namun ada beberapa hal penting:**
+
+- 🔓 **No Authentication**: Siapapun bisa edit/hapus tanpa login
+- 🕒 **No Expiration**: Lists tetap ada sampai dihapus manual
+- 📊 **No Analytics**: Tidak ada tracking siapa yang edit
+- 🗑️ **Easy Deletion**: Siapapun bisa hapus seluruh list
+- 🌐 **Public Access**: URL yang tersebar bisa diakses siapapun
+
+### Best Practices
+
+1. **Use for Temporary Collaboration**: Meeting notes, shopping lists, event planning
+2. **Share Carefully**: Hanya share dengan orang yang dipercaya
+3. **Backup Important Data**: Jangan gunakan untuk data sensitif
+4. **Monitor Activity**: Check list secara berkala jika penting
+
+### Safety Features (Planned)
+
+- Rate limiting per IP
+- Auto cleanup inactive lists (>30 days)
+- Basic content moderation
+- Report abuse functionality
 
 ## 📖 Pelajaran Berharga
 
@@ -235,11 +294,10 @@ Dari pengembangan aplikasi ini, kami belajar:
      -H "Authorization: Bearer $TOKEN" \
      -F "file=@test.txt"
    
-   # 5. Test create task dengan attachment
-   curl -X POST https://your-worker-url/api/tasks \
-     -H "Authorization: Bearer $TOKEN" \
+   # 6. Test anonymous lists (HTTP polling)
+   curl -X POST https://your-worker-url/api/anonymous/lists \
      -H "Content-Type: application/json" \
-     -d '{"title":"Test Task","attachments":["7/1234567890-test.txt"]}'
+     -d '{"list_name":"Test Anonymous List"}'
    ```
 
 **Tips Debugging:**
